@@ -1,6 +1,11 @@
 public class Item {
-    private ItemType type;
-    private int maxAmount;
+    protected ItemType type;
+    protected int maxAmount;
+
+    public Item(ItemType type, int maxAmount) {
+        this.type = type;
+        this.maxAmount = maxAmount;
+    }
 
     public int getMaxAmount() {
         return this.maxAmount;

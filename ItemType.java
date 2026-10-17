@@ -1,18 +1,3 @@
-public enum ItemType {
-    GLASS_BOTTLE,
-    WATER_BOTTLE,
-    NETHER_WART,
-    BLAZE_POWDER,
-    GOLDEN_CARROT,
-    FERMENTED_SPIDER_EYE,
-    REDSTONE,
-    GLOWSTONE_DUST,
-    AWKWARD_POTION,
-    GUNPOWDER,
-    POTION_OF_NIGHT_VISION,
-    POTION_OF_INVISIBILITY,
-    POTION_OF_STRENGTH1,
-    POTION_OF_STRENGTH2,
-    POTION_OF_WEAKNESS,
-    ANY
+public sealed interface ItemType permits Ingredients, Potions, AnyItem {
+
 }

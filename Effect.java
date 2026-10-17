@@ -4,4 +4,5 @@ public enum Effect {
     WEAKNESS,
     NIGHT_VISION,
     INVISIBILITY,
+    NONE
 }
