@@ -13,6 +13,7 @@ public class BrewingManager {
         this.recipe = recipe;
     }
 
+    // Brews a potion that is made directly from water bottles (awkward potion, weakness).
     public void brewAwkward(Potions request, int amount) {
         if (!isValidAmount(amount)) {
             return;
@@ -43,9 +44,15 @@ public class BrewingManager {
         this.brewingStand.brew(request, amount);
     }
 
-    public List<ItemStack> brewPotion(Potions request, int amount) {
+    // Brews any potion on request: finds the whole chain of recipes
+    // (e.g. water -> awkward -> strength 1 -> strength 2), brews it step by step
+    // and prints the finished potions.
+    public void brewPotion(Potions request, int amount) {
+        System.out.println("Order: " + amount + " x " + request);
+
         if (!isValidAmount(amount)) {
-            return new ArrayList<>();
+            System.out.println("Nothing was brewed.\n");
+            return;
         }
 
         // walk back from the requested potion to the water bottles
@@ -55,7 +62,8 @@ public class BrewingManager {
             Recipe stepRecipe = Recipe.getRecipe(step);
             if (stepRecipe == null) {
                 System.out.println("There is no recipe for this potion.");
-                return new ArrayList<>();
+                System.out.println("Nothing was brewed.\n");
+                return;
             }
 
             chain.add(0, step);
@@ -72,9 +80,19 @@ public class BrewingManager {
             brewStep(chain.get(i), amount);
         }
 
-        return collectPotions();
+        List<ItemStack> result = collectPotions();
+        if (result.isEmpty()) {
+            System.out.println("Nothing was brewed.\n");
+            return;
+        }
+
+        for (ItemStack stack : result) {
+            System.out.println("Got: " + stack.amount() + " x " + stack.item().getType());
+        }
+        System.out.println();
     }
 
+    // One brewing cycle on top of the bottles that are already in the stand.
     private void brewStep(Potions request, int amount) {
         setRecipe(Recipe.getRecipe(request));
 
@@ -97,6 +115,7 @@ public class BrewingManager {
         return true;
     }
 
+    // Takes all bottles out of the stand.
     private List<ItemStack> collectPotions() {
         List<ItemStack> collected = new ArrayList<>();
         for (Slot out : new Slot[] {brewingStand.getOut1(), brewingStand.getOut2(), brewingStand.getOut3()}) {
@@ -107,6 +126,7 @@ public class BrewingManager {
         return collected;
     }
 
+    // Empties the stand so the next request starts from scratch.
     private void clearStand() {
         collectPotions();
         Slot in = brewingStand.getIn();
