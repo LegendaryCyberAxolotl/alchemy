@@ -13,6 +13,7 @@ public class BrewingStand {
     private final List<ItemType> allowedIn = List.of(AnyItem.ANY);
     private final List<ItemType> allowedFuel = List.of(Ingredients.BLAZE_POWDER);
     private final List<ItemType> allowedOut1 = List.of(
+        Potions.WATER_BOTTLE,
         Potions.AWKWARD_POTION,
         Potions.POTION_OF_NIGHT_VISION,
         Potions.POTION_OF_NIGHT_VISION_LONG,
@@ -25,6 +26,7 @@ public class BrewingStand {
         Potions.POTION_OF_WEAKNESS_LONG);
 
     private final List<ItemType> allowedOut2 = List.of(
+        Potions.WATER_BOTTLE,
         Potions.AWKWARD_POTION,
         Potions.POTION_OF_NIGHT_VISION,
         Potions.POTION_OF_NIGHT_VISION_LONG,
@@ -37,6 +39,7 @@ public class BrewingStand {
         Potions.POTION_OF_WEAKNESS_LONG);
 
     private final List<ItemType> allowedOut3 = List.of(
+        Potions.WATER_BOTTLE,
         Potions.AWKWARD_POTION,
         Potions.POTION_OF_NIGHT_VISION,
         Potions.POTION_OF_NIGHT_VISION_LONG,
@@ -72,7 +75,7 @@ public class BrewingStand {
     }
 
     public void addFuel(Item fuel, int amount) {
-        this.slotFuel.placeItem(new Item(Ingredients.BLAZE_POWDER, 64), amount);
+        this.slotFuel.placeItem(fuel, amount);
         this.consumeFuel();
     }
 
@@ -115,14 +118,37 @@ public class BrewingStand {
         return this.slotOut3;
     }
 
-    public void brew(Potions request) {
+    public boolean isOutEmpty() {
+        boolean out1 = this.slotOut1.isEmpty();
+        boolean out2 = this.slotOut2.isEmpty();
+        boolean out3 = this.slotOut3.isEmpty();
+
+        if (out1 && out2 && out3) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private ItemType typeOf(Slot slot) {
+        if (slot.isEmpty()) {
+            return null;
+        }
+        return slot.getItem().getType();
+    }
+
+    public void brew(Potions request, int amount) {
+        if (amount < 1 || amount > 3) {
+            System.out.println("You can get 1 to 3 potions.");
+            return;
+        }
         Recipe recipe = Recipe.getRecipe(request);
         if (recipe == null) {
             System.out.println("There is no recipe for this potion.");
             return;
         }
 
-        if (!Recipe.isValidRecipe(recipe, this.getIn().getItem().getType(), this.getOut1().getItem().getType(), this.getOut2().getItem().getType(), this.getOut3().getItem().getType())) {
+        if (!Recipe.isValidRecipe(recipe, typeOf(this.slotIn), typeOf(this.slotOut1), typeOf(this.slotOut2), typeOf(this.slotOut3))) {
             System.out.println("Invalid ingredients.");
             return;
         }
@@ -130,8 +156,18 @@ public class BrewingStand {
         Potion result = recipe.getRecipeResult();
 
         this.consumeFuel();
+        if (!this.isFuel()) {
+            System.out.println("There is no fuel.");
+            return;
+        }
         this.burnFuel();
         this.slotIn.takeItems(1);
+
+        try {
+            Thread.sleep(brewingTime);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         if(!this.slotOut1.isEmpty()) {
             this.slotOut1.takeItems(1);

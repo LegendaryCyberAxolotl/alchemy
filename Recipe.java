@@ -2,11 +2,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Recipe {
-    private ItemType in;
+    private Ingredients in;
     private ItemType out;
     private Potion result;
 
-    public static final Recipe AWKWARD_POTION = new Recipe(Ingredients.NETHER_WART, Ingredients.WATER_BOTTLE, Potion.AWKWARD_POTION);
+    public static final Recipe AWKWARD_POTION = new Recipe(Ingredients.NETHER_WART, Potions.WATER_BOTTLE, Potion.AWKWARD_POTION);
 
     public static final Recipe POTION_OF_NIGHT_VISION = new Recipe(Ingredients.GOLDEN_CARROT, Potions.AWKWARD_POTION, Potion.POTION_OF_NIGHT_VISION);
     public static final Recipe POTION_OF_NIGHT_VISION_LONG = new Recipe(Ingredients.REDSTONE, Potions.POTION_OF_NIGHT_VISION, Potion.POTION_OF_NIGHT_VISION_LONG);
@@ -19,7 +19,7 @@ public class Recipe {
 
     public static final Recipe POTION_OF_STRENGTH2 = new Recipe(Ingredients.GLOWSTONE_DUST, Potions.POTION_OF_STRENGTH1, Potion.POTION_OF_STRENGTH2);
 
-    public static final Recipe POTION_OF_WEAKNESS = new Recipe(Ingredients.FERMENTED_SPIDER_EYE, Ingredients.WATER_BOTTLE, Potion.POTION_OF_WEAKNESS);
+    public static final Recipe POTION_OF_WEAKNESS = new Recipe(Ingredients.FERMENTED_SPIDER_EYE, Potions.WATER_BOTTLE, Potion.POTION_OF_WEAKNESS);
     public static final Recipe POTION_OF_WEAKNESS_LONG = new Recipe(Ingredients.REDSTONE, Potions.POTION_OF_WEAKNESS, Potion.POTION_OF_WEAKNESS_LONG);
 
     private static final List<Recipe> recipes = List.of(
@@ -35,13 +35,13 @@ public class Recipe {
         POTION_OF_WEAKNESS_LONG
     );
 
-    public Recipe(ItemType in, ItemType out, Potion result) {
+    public Recipe(Ingredients in, ItemType out, Potion result) {
         this.in = in;
         this.out = out;
         this.result = result;
     }
 
-    public ItemType getRecipeIn() {
+    public Ingredients getRecipeIn() {
         return this.in;
     }
 
@@ -54,11 +54,22 @@ public class Recipe {
     }
 
     public static boolean isValidRecipe(Recipe recipe, ItemType in, ItemType out1, ItemType out2, ItemType out3) {
-        if (in != recipe.getRecipeIn() && (out1 != recipe.getRepiceOut() || out2 != recipe.getRepiceOut() || out3 != recipe.getRepiceOut())) {
+        if (in != recipe.getRecipeIn()) {
             return false;
         }
 
-        return true;
+        boolean hasBottle = false;
+        for (ItemType out : new ItemType[] {out1, out2, out3}) {
+            if (out == null) {
+                continue;
+            }
+            if (out != recipe.getRepiceOut()) {
+                return false;
+            }
+            hasBottle = true;
+        }
+
+        return hasBottle;
     }
 
     public static Recipe getRecipe(Potions request) {

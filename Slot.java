@@ -47,6 +47,7 @@ public class Slot {
             return new ItemStack(this.item, this.amount);
         }
 
+        Item taken = this.item;
         this.amount -= amount;
 
         if (this.amount == 0) {
@@ -54,22 +55,25 @@ public class Slot {
             this.amount = 0;
         }
 
-        return new ItemStack(this.item, amount);
+        return new ItemStack(taken, amount);
     }
 
     public void placeItem(Item item, int amount) {
         int placed = this.amount + amount;
 
-        if (!this.allowedItems.contains(item.getType()) || !this.allowedItems.contains(AnyItem.ANY)) {
+        if (!this.allowedItems.contains(item.getType()) && !this.allowedItems.contains(AnyItem.ANY)) {
             System.out.println("Unable to place item in this slot");
+            return;
         }
 
-        if (this.item != null && this.item != item) {
+        if (this.item != null && this.item.getType() != item.getType()) {
             System.out.println("The slot is full");
+            return;
         }
 
-        if (placed > this.item.getMaxAmount()) {
+        if (placed > item.getMaxAmount()) {
             System.out.println("You try to place more items than allowed in its stack");
+            return;
         }
 
         this.item = item;

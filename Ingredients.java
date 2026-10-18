@@ -1,6 +1,5 @@
 public enum Ingredients implements ItemType {
     GLASS_BOTTLE,
-    WATER_BOTTLE,
     NETHER_WART,
     BLAZE_POWDER,
     GOLDEN_CARROT,

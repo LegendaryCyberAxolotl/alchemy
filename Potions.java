@@ -1,4 +1,5 @@
 public enum Potions implements ItemType {
+    WATER_BOTTLE,
     AWKWARD_POTION,
     POTION_OF_NIGHT_VISION,
     POTION_OF_NIGHT_VISION_LONG,
